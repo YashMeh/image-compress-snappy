@@ -1,0 +1,56 @@
+<html>
+  <head>
+    <title>First Flight Compress</title>
+    <style type="text/css">
+      ul {
+        white-space: nowrap;
+      }
+      li {
+        display: inline;
+      }
+    </style>
+    <script
+      src="https://code.jquery.com/jquery-3.6.0.min.js"
+      integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+      crossorigin="anonymous"
+    ></script>
+  </head>
+  <body>
+    <input id="iter" type="text" placeholder="Number of images" />
+    <button onclick="userAction()">Fetch</button>
+    <ol id="listContainer"></ol>
+  </body>
+  <script type="text/javascript" src="./snappyjs.js"></script>
+  <script type="text/javascript">
+    // registering the service-worker
+    if (navigator && navigator.serviceWorker) {
+      navigator.serviceWorker
+        .register("sw.js")
+        .then((success) => {
+          console.log("service worker registered");
+        })
+        .catch((err) => {
+          console.log(`Error registering the worker ${err}`);
+        });
+    }
+    const userAction = async () => {
+      const numberOfImages = Number(document.getElementById("iter").value);
+      for (var i = 0; i < numberOfImages; i++) {
+        // Fetch the original image
+        fetch("http://localhost:8080/img")
+          // Retrieve its body as ReadableStream
+          .then(async (response) => {
+            var resBlob = await response.blob();
+            var objectURL = URL.createObjectURL(resBlob);
+            var ul = document.getElementById("listContainer");
+            var li = document.createElement("li");
+            var img = document.createElement("img");
+            img.src = objectURL;
+            li.appendChild(img);
+            ul.appendChild(li);
+          })
+          .catch((err) => console.error(err));
+      }
+    };
+  </script>
+</html>
